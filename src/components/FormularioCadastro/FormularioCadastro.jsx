@@ -6,6 +6,20 @@ class FormularioCadastro extends Component{
         super(pros)
         this.titulo="";
         this.texto="";
+        this.categoria = "Sem Categoria";
+        this.state = {categorias:[]}
+        this.ref = this._novasCategorias.bind(this)
+    }
+    componentDidMount(){
+        this.props.categorias.inscrever(this.ref)
+    }
+
+    componentWillUnmount(){
+        this.props.categorias.desinscrever(this.ref)  
+    }
+
+    _novasCategorias(categorias){
+        this.setState({...this.state,categorias})
     }
 
     _handleMudancaTitulo(evento){
@@ -20,7 +34,13 @@ class FormularioCadastro extends Component{
     _criarNota(evento){
         evento.preventDefault();
         evento.stopPropagation();
-        this.props.criarNota(this.titulo,this.texto)
+        this.props.adicionarNota(this.titulo,this.texto, this.categoria)
+    }
+
+    _handleMudancaCategoria(evento){
+        evento.stopPropagation();
+        this.categoria =evento.target.value
+
     }
 
     render(){
@@ -28,7 +48,23 @@ class FormularioCadastro extends Component{
             <form  onSubmit={this._criarNota.bind(this)}>
                 <div className="mb-3">
                     <label 
-                        for="exampleFormControlInput1" 
+                        htmlFor="exampleFormControlSelect1" 
+                        className="form-label"
+                    >Categorias</label>
+                    <select 
+                        onChange={this._handleMudancaCategoria.bind(this)}
+                        className="form-select" 
+                        id="exampleFormControlSelect1" 
+                    >
+                        {this.state.categorias.map((categoria,index)=>{
+                            return (<option key={index}>{categoria}</option>)
+                        })}
+                        <option>Sem Categoria</option>
+                    </select>
+                </div>
+                <div className="mb-3">
+                    <label 
+                        htmlFor="exampleFormControlInput1" 
                         className="form-label"
                     >Título da Nota</label>
                     <input 
@@ -40,7 +76,7 @@ class FormularioCadastro extends Component{
                     ></input>
                 </div>
                 <div className="mb-3">
-                    <label for="exampleFormControlTextarea1" className="form-label">Descrição da Nota</label>
+                    <label htmlFor="exampleFormControlTextarea1" className="form-label">Descrição da Nota</label>
                     <textarea 
                         className="form-control" 
                         id="exampleFormControlTextarea1"  
